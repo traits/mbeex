@@ -4,9 +4,9 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="traits",
+    name="mbee",
     version="0.0.1",
-    author="traits",
+    author="mbee",
     author_email="python@traits.de",
     description="traits.de - common stuff",
     long_description=long_description,

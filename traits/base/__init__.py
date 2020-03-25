@@ -1,1 +1,0 @@
-print("traits-base here!")
