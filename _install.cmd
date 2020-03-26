@@ -3,7 +3,7 @@ REM The second step installs a development version. This version picks up change
 REM changed source files immediately (but probably from new/renamed ones), 
 REM but is prone to source file movement.
 
-python setup.py sdist bdist_wheel
+python setup.py sdist bdist_wheel 
 python -m pip install -e .
 
 REM This will install in the python distributions site-packages directory. (Dis-)Advantages
