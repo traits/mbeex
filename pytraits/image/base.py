@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import cv2
 
-from pytraits.base import Vector2D
+from pytraits.base import Size2D
 
 
 def _s(fname):  # OpenCV doesn't understand Path objects
@@ -11,6 +11,11 @@ def _s(fname):  # OpenCV doesn't understand Path objects
 
 
 def read_image(fname, enforce_color=False):
+    """
+    Read image from file. For enforce_color==True, the image is converted to BGR:
+    2 color channels are added for grayscale images, an alpha channel is ignored
+    for corresponding formats.
+    """
     f = cv2.IMREAD_UNCHANGED
     if enforce_color:
         f = cv2.IMREAD_COLOR
@@ -27,8 +32,8 @@ def write_image(fname, img):
 
 
 def image_size(img):
-    """ Returns (x,y) instead numpy's img.shape[:2] (would be (y,x)) """
-    return Vector2D(*img.shape[1::-1])  # http://stackoverflow.com/questions/25000159/how-to-cast-tuple-into-namedtuple
+    """ Returns (xsize,ysize) instead numpy's img.shape[:2] (would be (ysize,xsize) instead) """
+    return Size2D(*img.shape[1::-1])  # http://stackoverflow.com/questions/25000159/how-to-cast-tuple-into-namedtuple
 
 
 def image_area(img):
@@ -104,7 +109,7 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
     par[1] += dx0 + dx1
     par[2] += dy0 + dy1
 
-    bg = create_noisy_image(Vector2D(par[1], par[2]), img.shape[2])
+    bg = create_noisy_image(Size2D(par[1], par[2]), img.shape[2])
     return overlay_transformed_image(img, bg, par[0])
 
 

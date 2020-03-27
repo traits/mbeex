@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from pytraits.base import Vector2D
+from pytraits.base import Size2D
 from pytraits.image.base import *
 
 # Python >= 3.7
@@ -11,7 +11,7 @@ else:
 
 root = Path(__file__).parents[1]
 out_dir = root / '_output'
-src_size = Vector2D(x = 300, y = 200)
+src_size = Size2D(x = 300, y = 200)
 
 inames = [
     'gray',
