@@ -6,11 +6,15 @@ import cv2
 from pytraits.base import Vector2D
 
 
-def read_image(fname):  # , grayscale=False):
-    #f = cv2.IMREAD_COLOR
-    # if grayscale:
-        #f = cv2.IMREAD_GRAYSCALE
-    return cv2.imread(fname)  # , flags=f)
+def _s(fname):  # OpenCV doesn't understand Path objects
+    return str(fname)
+
+
+def read_image(fname, enforce_color=False):
+    f = cv2.IMREAD_UNCHANGED
+    if enforce_color:
+        f = cv2.IMREAD_COLOR
+    return cv2.imread(_s(fname), flags=f)
 
 
 def write_image(fname, img):
@@ -19,7 +23,7 @@ def write_image(fname, img):
     dir = path.parent
     if not dir.exists():
         os.makedirs(dir)
-    cv2.imwrite(fname, img)
+    cv2.imwrite(_s(fname), img)
 
 
 def image_size(img):

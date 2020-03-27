@@ -4,3 +4,4 @@
 __pycache__
 /doc/sphinx
 /*.wpu
+/_output

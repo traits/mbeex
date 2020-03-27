@@ -3,12 +3,12 @@ import os.path
 from pathlib import Path
 
 
-def stemName(file_name):
+def stem_name(file_name):
     '''Return the files stem (string w/o directory and extension part)'''
     return Path(Path(file_name).name).stem
 
 
-def countFiles(root):
+def count_files(root):
     '''Count all files in a directory tree.'''
     ret = 0
     for dirpath, dirs, files in os.walk(root):
@@ -17,7 +17,7 @@ def countFiles(root):
     return ret
 
 
-def filterDirectory(root, filter, *args, print_progress=False):
+def filter_directory(root, filter, *args, print_progress=False):
     '''
     Return a subset of file names below root, using a
     filter function (or functor - overload __call__)
@@ -25,7 +25,7 @@ def filterDirectory(root, filter, *args, print_progress=False):
     
     For filter == None, every file will be returned.
     '''
-    all = countFiles(root)
+    all = count_files(root)
     cnt = 0
     percent = 0
     old_percent = 0
@@ -45,7 +45,7 @@ def filterDirectory(root, filter, *args, print_progress=False):
     return ret
 
 
-def replicateDir(iroot, relpath, oroot):
+def replicate_dir(iroot, relpath, oroot):
     '''
     Replicate some part of iroots directory structure (described by relative path relpath)
     in oroot on the fly.
@@ -87,13 +87,13 @@ class DirectoryWalker:
         using a filter function (or functor [overload __call__])
         filter(ifile, ofile, *args)
         '''
-        all = countFiles(self.src_dir)
+        all = count_files(self.src_dir)
         cnt = 0
         percent = 0
         old_percent = 0
         print(f"Progress: {percent}% ({cnt}/{all} files)", end="\r")
         for dirpath, dirs, files in os.walk(self.src_dir):
-            structure = replicateDir(self.src_dir, dirpath, self.dst_dir)
+            structure = replicate_dir(self.src_dir, dirpath, self.dst_dir)
             for file in files:
                 ifile = os.path.join(dirpath, file)
                 ofile = os.path.join(structure, file)
@@ -109,7 +109,7 @@ class DirectoryWalker:
         functor f to every allowed source file. f can map files 1:1 and n:1
         '''
         for curpath, subdirs, files in os.walk(self.src_dir):
-            structure = replicateDir(self.src_dir, curpath, self.dst_dir)
+            structure = replicate_dir(self.src_dir, curpath, self.dst_dir)
             if not multiple:
                 for file in files:
                     ifile = os.path.normpath(os.path.join(curpath, file))
@@ -180,7 +180,7 @@ class FileFilter:
         if not self.valid_suffixes:
             return ''
         for s in self.valid_suffixes:
-            n = stemName(file)
+            n = stem_name(file)
             if n.endswith(s):
                 n = n[:-len(s)] + new_suffix
                 pf = Path(file)

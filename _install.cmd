@@ -1,3 +1,5 @@
+@echo off
+
 REM The next two steps separate build an installation
 REM The second step installs a development version. This version picks up changes from
 REM changed source files immediately (but probably from new/renamed ones), 
