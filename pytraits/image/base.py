@@ -61,8 +61,9 @@ def calc_rotate_parameters(img, angle):
     Be aware, that this transformation is the backward (inverse) transformation
     (dst -> img), because OpenCV's warpAffine function utilizes this form. 
 
-    img -- source image
-    angle -- rotation angle (radians)
+    Parameter:
+        :img:   source image
+        :angle: rotation angle (radians)
     """
 
     w = img.shape[1]
@@ -94,12 +95,13 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
     Put transformed image on white-noise background. 
     Offsets must be always >= 0.
 
-    img -- source image
-    angle -- rotation angle (radians)
-    dx0 -- x offset (left)
-    dy0 -- y offset (top)
-    dx1 -- x offset (right)
-    dy1 -- y offset (bottom)
+    Parameter:
+        :img:   source image
+        :angle: rotation angle (radians)
+        :dx0:   x offset (left)
+        :dy0:   y offset (top)
+        :dx1:   x offset (right)
+        :dy1:   y offset (bottom)
     """
     par = calc_rotate_parameters(img, angle)
 
@@ -125,9 +127,10 @@ def overlay_images(top, bg, mask):
     Copy image onto some background, using a mask. All argument images must have
     the same size, otherwise an exception is called
 
-    top -- foreground image
-    bg -- background image
-    mask -- mask
+    Parameter:
+        :top:  foreground image
+        :bg:   background image
+        :mask: mask
     """
     if (image_size(bg) != image_size(top) or image_size(bg) != image_size(mask)):
         raise Exception('image size mismatch')
