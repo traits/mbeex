@@ -1,4 +1,5 @@
 import sys
+import cv2
 from pathlib import Path
 from pytraits.base import Size2D
 from pytraits.image.base import *
@@ -19,6 +20,8 @@ inames = [
     'color_with_alpha',
     'noise_color',
     'noise_gray',
+    'masked',
+    'overlay',
 ]
 
 
@@ -35,6 +38,24 @@ _i = _make_idict()
 def _r(fname, should):
     img = read_image(_i[fname])
     print(f'Read: {img.shape} depth should be: {should} ')
+
+
+def _test_mask():
+    top = create_mono_colored_image(src_size, 3, (255, 0, 0))  # blue
+    bg = create_mono_colored_image(src_size, 3, (0, 0, 255))
+    mask = create_mono_colored_image(src_size, 1, 0)
+    mask = cv2.circle(mask, center = (src_size.x // 2, src_size.y // 2), radius = 20, color = 255, thickness = cv2.FILLED)
+    img = overlay_images(top, bg, mask)
+    write_image(_i['masked'], img)
+    print(f'masked: blue circle on red background')
+
+
+def _test_overlay():
+    angle = 15 * np.pi / 180
+    img = create_mono_colored_image(src_size, 3, (0, 200, 0))
+    img = overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0)
+    write_image(_i['overlay'], img)
+    print(f'overlay: 15 deg rotated green rect on noisy background')
 
 
 def test():
@@ -54,3 +75,7 @@ def test():
     _r('color_with_alpha', 4)
     _r('noise_color', 3)
     _r('noise_gray', 1)
+
+    _test_mask()
+    _test_overlay()
+

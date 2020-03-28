@@ -4,8 +4,8 @@ import image_base
 
 
 def main():
-    base.test()
-    # image_base.test()
+    # base.test()
+    image_base.test()
 
 
 if __name__ == '__main__':

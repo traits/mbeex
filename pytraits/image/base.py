@@ -10,20 +10,39 @@ def _s(fname):  # OpenCV doesn't understand Path objects
     return str(fname)
 
 
+class ImageException(Exception):
+    """
+    General image exception
+    """
+
+    pass
+
+
 def read_image(fname, enforce_color=False):
     """
     Read image from file. For enforce_color==True, the image is converted to BGR:
     2 color channels are added for grayscale images, an alpha channel is ignored
     for corresponding formats.
     """
+
     f = cv2.IMREAD_UNCHANGED
     if enforce_color:
         f = cv2.IMREAD_COLOR
-    return cv2.imread(_s(fname), flags=f)
+    ret = cv2.imread(_s(fname), flags=f)
+    # TODO: Make a decision regarding general RGB/BGR handling
+    # if len(ret.shape) > 2:
+        # if ret.shape[2] == 3:
+            # ret = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)   # BGR -> RGB
+        # elif ret.shape[2] == 4:
+            #ret = cv2.cvtColor(ret, cv2.COLOR_BGRA2RGBA)
+    return ret
 
 
 def write_image(fname, img):
-    """ Write image to file and create all intermediate directories, if not existing. """
+    """
+    Write image to file and create all intermediate directories, if not existing.
+    """
+
     path = Path(fname)
     dir = path.parent
     if not dir.exists():
@@ -32,23 +51,38 @@ def write_image(fname, img):
 
 
 def image_size(img):
-    """ Returns (xsize,ysize) instead numpy's img.shape[:2] (would be (ysize,xsize) instead) """
+    """
+    Returns (xsize,ysize) instead numpy's img.shape[:2]
+    (would be (ysize,xsize) instead)
+    """
+
     return Size2D(*img.shape[1::-1])  # http://stackoverflow.com/questions/25000159/how-to-cast-tuple-into-namedtuple
 
 
 def image_area(img):
+    """
+    Image area in pixels
+    """
+
     return img.shape[0] * img.shape[1]
 
 
 def create_mono_colored_image(size, depth, color):
-    """ Return new mono-colored RGB (depth==3) or grayscale (depth == 1) image """
+    """
+    Return new mono-colored (depth==3) [with alpha for depth==4]
+    or grayscale (depth == 1) image
+    """
+
     img = np.empty((size.y, size.x, depth), np.uint8)
     img[:] = color
     return img
 
 
 def create_noisy_image(size, depth):
-    """ Return white-noised color image """
+    """
+    Return image with every pixel channel randomized
+    """
+
     imarray = np.random.randint(0, 256, size=(size.y, size.x, depth)).astype('uint8')
     return imarray
 
@@ -61,9 +95,10 @@ def calc_rotate_parameters(img, angle):
     Be aware, that this transformation is the backward (inverse) transformation
     (dst -> img), because OpenCV's warpAffine function utilizes this form. 
 
-    Parameter:
-        :img:   source image
-        :angle: rotation angle (radians)
+    Parameters:
+        :img:       source image
+        :angle:     rotation angle (radians)
+        :return:    transformation matrix for OpenCV warpAffine
     """
 
     w = img.shape[1]
@@ -84,10 +119,10 @@ def calc_rotate_parameters(img, angle):
 
 
 def create_mask(src_size, trafo, dst_size, flags):
-    img2gray = create_mono_colored_image(src_size, 1, 255)
-    img2gray = cv2.warpAffine(img2gray, trafo, dst_size, flags=flags)
-    ret, mask = cv2.threshold(img2gray, 0, 255, cv2.THRESH_BINARY)
-    return cv2.bitwise_not(mask)
+    img = create_mono_colored_image(src_size, 1, 255)
+    img = cv2.warpAffine(img, trafo, dst_size, flags=flags)
+    _, mask = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY)
+    return mask
 
 
 def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
@@ -95,7 +130,7 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
     Put transformed image on white-noise background. 
     Offsets must be always >= 0.
 
-    Parameter:
+    Parameters:
         :img:   source image
         :angle: rotation angle (radians)
         :dx0:   x offset (left)
@@ -103,6 +138,7 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
         :dx1:   x offset (right)
         :dy1:   y offset (bottom)
     """
+
     par = calc_rotate_parameters(img, angle)
 
     # adjust matrix translation part
@@ -115,24 +151,25 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
     return overlay_transformed_image(img, bg, par[0])
 
 
-def overlay_transformed_image(img, bg, trafo):
+def overlay_transformed_image(top, bg, trafo):
     flag = cv2.INTER_NEAREST
-    mask = create_mask(image_size(img), trafo, image_size(bg), flags=flag)
-    img = cv2.warpAffine(img, trafo, image_size(bg), flags=flag)
-    return overlay_images(img, bg, mask)
+    mask = create_mask(image_size(top), trafo, image_size(bg), flags=flag)
+    top = cv2.warpAffine(top, trafo, image_size(bg), flags=flag)
+    return overlay_images(top, bg, mask)
 
 
 def overlay_images(top, bg, mask):
     """
-    Copy image onto some background, using a mask. All argument images must have
-    the same size, otherwise an exception is called
+    Copy image onto some background overwriting them using a mask. All argument images must have
+    the same size, otherwise an exception is called.
 
-    Parameter:
+    Parameters:
         :top:  foreground image
         :bg:   background image
         :mask: mask
     """
+
     if (image_size(bg) != image_size(top) or image_size(bg) != image_size(mask)):
-        raise Exception('image size mismatch')
-    masked_bg = cv2.bitwise_and(bg, bg, mask=mask)
-    return cv2.add(masked_bg, top)
+        raise ImageException('image size mismatch')
+
+    return cv2.copyTo(top, mask, bg)
