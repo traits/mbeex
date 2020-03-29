@@ -1,10 +1,9 @@
-import pytraits.base.directory as ds
 import base
 import image_base
 
 
 def main():
-    # base.test()
+    base.test()
     image_base.test()
 
 

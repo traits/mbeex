@@ -87,7 +87,7 @@ def create_noisy_image(size, depth):
     return imarray
 
 
-def calc_rotate_parameters(img, angle):
+def transformation_from_angle(img, angle):
     """
     Return transformation matrix and new (width,height) for an image, rotated by 
     some angle around the center. The matrix will contain the rotation and the 
@@ -118,10 +118,20 @@ def calc_rotate_parameters(img, angle):
     return [rot_mat, int(np.math.ceil(nw)), int(np.math.ceil(nh))]
 
 
-def create_mask(src_size, trafo, dst_size, flags):
+def create_transformed_rect_mask(src_size, trafo, dst_size, flags):
+    """
+    Create white grayscale image, transform it into black target and return result image
+    
+    Parameters:
+        :src_size:  rectangular mask size before transformation
+        :trafo:     affine transformation for cv2.warpAffine
+        :dst_size:  target size (pre-calculated)
+        :flags:     cv2.warpAffine flags
+        :return:    transformed rectangular mask (white==255) on black background
+    """
     img = create_mono_colored_image(src_size, 1, 255)
     img = cv2.warpAffine(img, trafo, dst_size, flags=flags)
-    _, mask = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY)
+    _, mask = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY)  # set all pixels > 0 to white (255)
     return mask
 
 
@@ -139,7 +149,7 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
         :dy1:   y offset (bottom)
     """
 
-    par = calc_rotate_parameters(img, angle)
+    par = transformation_from_angle(img, angle)
 
     # adjust matrix translation part
     par[0][0, 2] += dx0
@@ -153,7 +163,7 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
 
 def overlay_transformed_image(top, bg, trafo):
     flag = cv2.INTER_NEAREST
-    mask = create_mask(image_size(top), trafo, image_size(bg), flags=flag)
+    mask = create_transformed_rect_mask(image_size(top), trafo, image_size(bg), flags=flag)
     top = cv2.warpAffine(top, trafo, image_size(bg), flags=flag)
     return overlay_images(top, bg, mask)
 
