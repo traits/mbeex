@@ -149,11 +149,11 @@ class Generator_2(Generator):
         super().__init__(size)
 
     def execute(self):
-        '''Calculates a single cycle of pixel creation on the whole grid'''
+        '''---'''
 
         new_grid = copy.deepcopy(self._grid)
 
-        p = np.array(new_grid.shape) / 2
+        p = np.array(new_grid.shape) / 2  # center point as (c_y, c_x)
         b = 1.8 / (np.pi)
         phi = 1
         i = 1
@@ -161,9 +161,9 @@ class Generator_2(Generator):
         while i:
             x = np.sqrt(phi)
             phi = i * np.pi / 100 / x
-            x, y = (np.rint([b * phi * np.cos(phi), b * phi * np.sin(phi)]) + p).astype(int)
-            if (x >= 0 and x < new_grid.shape[0] and y >= 0 and y < new_grid.shape[1]):
-                new_grid[x, y] = 100
+            y, x = (np.rint([b * phi * np.cos(phi), b * phi * np.sin(phi)]) + p).astype(int)
+            if (x >= 0 and x < new_grid.shape[1] and y >= 0 and y < new_grid.shape[0]):
+                new_grid[y, x] = 100
                 cnt = 0
             if cnt > new_grid.shape[0] * new_grid.shape[1]:
                 break
