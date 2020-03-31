@@ -1,14 +1,17 @@
 import cv2
-from pathlib import Path
 from pytraits.base import Size2D
 from pytraits.image.io import *
 from pytraits.image.base import *
+from pytraits.image.region import *
 from test import *
 
 inames = [
     'masked',
     'transformed_mask',
     'overlay',
+    'random',
+    'randomborder',
+    'spiral',
 ]
 
 _i = make_idict(inames)
@@ -44,11 +47,30 @@ def _test_overlay():
     print(f'overlay: green rectangle rotated 15 degrees on noisy background')
 
 
+def _test_random():
+    img, _ = random_grid(src_size, 10)
+    write_image(_i['random'], img)
+    print(f'random: 10 classes seeded')
+
+
+def _test_generator():
+    partitioner = Generator_1(src_size, 10)
+    img = partitioner.execute()
+    write_image(_i['randomborder'], img)
+    print(f'randomborder: written')
+
+    partitioner = Generator_2(src_size)
+    img = partitioner.execute()
+    write_image(_i['spiral'], img)
+    print(f'spiral: written')
+
+
 def test():
     _test_mask()                # creating masked image
     _test_transformed_mask()    # creating transformed rectangular mask
     _test_overlay()             # overlay image with transformed 2nd image
-
+    _test_random()              # random seeds
+    _test_generator()
 
 
 
