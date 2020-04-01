@@ -1,8 +1,9 @@
-from pytraits.base import Size2D
-
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+
+from pytraits.base import Size2D
+
 
 """
 Shapes, ROI's and operations on them and
@@ -76,14 +77,13 @@ class VicinityIterator:
     def setVicinity(self, vic):
         self._vic = vic
 
-    def execute(self, x, y, grid, coords):
+    def execute(self, x, y, grid):
         np.random.shuffle(self._vic)
         for dx, dy in self._vic:
             yy = (y + dy) % self._size.y
             xx = (x + dx) % self._size.x
             if self._grid[yy, xx] != 0:
                 grid[y, x] = self._grid[yy, xx]
-                coords.remove((x, y))
                 raise VicinityIteratorException()  # signal when pixel has been set
 
 
@@ -120,16 +120,32 @@ class Generator_1(Generator):
         fig, ax = plt.subplots()
         h = ax.imshow(self._grid, interpolation = 'none', cmap='Spectral')
 
+        class Checker:
+            '''
+            Provides state maintaining callable for list comprehension filter,
+            speeding up removing elements from Generator._coords
+            '''
+
+            def __init__(self, i, skips, grid, it, check):
+                self._i = i
+                self._skips = skips
+                self._grid = grid
+                self._it = it
+                self._check = check
+
+            def setGrid(self, grid):
+                self._grid = grid
+
+            def __call__(self, x, y):
+                self._i = (self._i + 1) % self._skips
+                return not self._check(self._i, self._skips, self._grid, self._it, x, y)
+
+        cc = Checker(i, skips, None, vic_it, self.checkPixel)
         plt.ion()
         while self._coords:
-            new_grid = copy.deepcopy(self._grid)
-            for x, y in reversed(self._coords):
-                    try:
-                        i = (i + 1) % skips
-                        if not i % skips or len(self._coords) < skips:
-                            vic_it.execute(x, y, new_grid, self._coords)
-                    except VicinityIteratorException:
-                        continue
+            new_grid = self._grid
+            cc.setGrid(new_grid)
+            self._coords[:] = [(x, y) for (x, y) in self._coords if cc(x, y)]
             self._grid[:] = new_grid[:]
 
             h.set_data(new_grid)
@@ -138,6 +154,14 @@ class Generator_1(Generator):
             print(f'remaining: {len(self._coords)}')
 
         return new_grid
+
+    def checkPixel(self, i, skips, new_grid, vic_it, x, y):
+        try:
+            if not i % skips or len(self._coords) < skips:
+                vic_it.execute(x, y, new_grid)
+                return False
+        except VicinityIteratorException:
+            return True
 
 
 class Generator_2(Generator):
