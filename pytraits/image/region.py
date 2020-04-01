@@ -58,11 +58,6 @@ def random_grid(size, classes, instances = 0):
     return grid, grid_coords
 
 
-class VicinityIteratorException(Exception):
-    '''To break deep iteration cycles'''
-    pass
-
-
 class VicinityIterator:
     '''
     Vicinity Iterator - surrounds a pixel and sets new pixels
@@ -84,7 +79,8 @@ class VicinityIterator:
             xx = (x + dx) % self._size.x
             if self._grid[yy, xx] != 0:
                 grid[y, x] = self._grid[yy, xx]
-                raise VicinityIteratorException()  # signal when pixel has been set
+                return True  # pixel has been set
+        return False
 
 
 class Generator:
@@ -156,12 +152,10 @@ class Generator_1(Generator):
         return new_grid
 
     def checkPixel(self, i, skips, new_grid, vic_it, x, y):
-        try:
-            if not i % skips or len(self._coords) < skips:
-                vic_it.execute(x, y, new_grid)
-                return False
-        except VicinityIteratorException:
-            return True
+        if not i % skips or len(self._coords) < skips:
+            return vic_it.execute(x, y, new_grid)
+
+        return False
 
 
 class Generator_2(Generator):
