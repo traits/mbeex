@@ -20,10 +20,10 @@ def get_kernel_border_coordinates(d):
     return [(x, y) for x in primitive for y in primitive if (abs(x) == border or abs(y) == border)]
 
 
-def random_grid(size, classes, instances = 0):
+def random_grid(size, classes, factor = 1, instances = 0):
     """
     Creates a black gray image of randomly seeded pixels with values > 0
-    from [1,...,classes] (so it is limited to 254 classes)
+    from [1,...,classes] (so it is limited to 254 classes for factor==1)
     For instances > classes, multiple seeds of the same class are allowed
     (but non-connected areas in general might nevertheless appear for
     non-deflecting boundary conditions and other reasons)
@@ -34,6 +34,8 @@ def random_grid(size, classes, instances = 0):
     Parameters:
         :size:      image size
         :classes:   number of classes
+        :factor:    multiplied with pixel value
+                    (example: factor=7 means pixel values of [7,14,21...7*classes]    
         :instances: number of instances
         
         :return: gray image with seeded pixels; coordinate array
@@ -48,7 +50,7 @@ def random_grid(size, classes, instances = 0):
     grid = np.zeros(size.x * size.y, dtype=int)
     i = 1
     for c in coords:
-        grid[c] = i
+        grid[c] = i * factor
         i = i + 1
 
     grid = grid.reshape(size.y, size.x)
@@ -64,10 +66,10 @@ class VicinityIterator:
     dependent on some condition
     '''
 
-    def __init__(self, grid):
+    def __init__(self, grid, border_coordinates = get_kernel_border_coordinates(3)):  # 3x3 kernel border
         self._grid = grid
         self._size = Size2D(self._grid.shape[1], self._grid.shape[0])
-        self.setVicinity(get_kernel_border_coordinates(3))  # 3x3 kernel border
+        self.setVicinity(border_coordinates)
 
     def setVicinity(self, vic):
         self._vic = vic
@@ -75,8 +77,8 @@ class VicinityIterator:
     def execute(self, x, y, grid):
         np.random.shuffle(self._vic)
         for dx, dy in self._vic:
-            yy = (y + dy) % self._size.y
             xx = (x + dx) % self._size.x
+            yy = (y + dy) % self._size.y
             if self._grid[yy, xx] != 0:
                 grid[y, x] = self._grid[yy, xx]
                 return True  # pixel has been set
@@ -93,50 +95,53 @@ class Generator:
         pass
 
 
-class Generator_1(Generator):
+class Generator_RB(Generator):
     '''
     Creates decompositions with slightly random boundaries
     '''
 
+    class Checker:
+        '''
+        Provides state maintaining callable for a list comprehension filter,
+        whose use accelerates removing elements from the Generator._coords list.
+        '''
+
+        def __init__(self, skips, coord_len, grid, it):
+            self._i = 0
+            self._skips = skips
+            self._coord_len = coord_len
+            self._grid = grid
+            self._it = it
+
+        def setGrid(self, grid):
+            self._grid = grid
+
+        def __call__(self, x, y):
+            self._i = (self._i + 1) % self._skips
+            return not self._checkPixel(self._i, self._skips, self._coord_len, self._grid, self._it, x, y)
+
+        def _checkPixel(self, i, skips, size, new_grid, vic_it, x, y):
+            if not i % skips or size < skips:
+                return vic_it.execute(x, y, new_grid)
+            return False
+
     def __init__(self, size, number_of_classes):
         super().__init__(size)
-        self._grid, self._coords = random_grid(size, number_of_classes)
+        self._grid, self._coords = random_grid(size, number_of_classes, factor = 10)
         self._vic = get_kernel_border_coordinates(5)
 
     def execute(self):
         '''Calculates pixel creation on the whole grid'''
         np.random.shuffle(self._coords)
-        vic = copy.deepcopy(self._vic)  # this might be shuffled etc.
-        vic_it = VicinityIterator(self._grid)
-        vic_it.setVicinity(vic)
+        vic = copy.deepcopy(self._vic)  # this might be shuffled, etc.
+        vic_it = VicinityIterator(self._grid, vic)
 
         new_grid = None
         skips = 3
-        i = 0
         fig, ax = plt.subplots()
         h = ax.imshow(self._grid, interpolation = 'none', cmap='Spectral')
 
-        class Checker:
-            '''
-            Provides state maintaining callable for list comprehension filter,
-            speeding up removing elements from Generator._coords
-            '''
-
-            def __init__(self, i, skips, grid, it, check):
-                self._i = i
-                self._skips = skips
-                self._grid = grid
-                self._it = it
-                self._check = check
-
-            def setGrid(self, grid):
-                self._grid = grid
-
-            def __call__(self, x, y):
-                self._i = (self._i + 1) % self._skips
-                return not self._check(self._i, self._skips, self._grid, self._it, x, y)
-
-        cc = Checker(i, skips, None, vic_it, self.checkPixel)
+        cc = Generator_RB.Checker(skips, len(self._coords), grid = None, it = vic_it)
         plt.ion()
         while self._coords:
             new_grid = self._grid
@@ -151,14 +156,8 @@ class Generator_1(Generator):
 
         return new_grid
 
-    def checkPixel(self, i, skips, new_grid, vic_it, x, y):
-        if not i % skips or len(self._coords) < skips:
-            return vic_it.execute(x, y, new_grid)
 
-        return False
-
-
-class Generator_2(Generator):
+class Generator_Spiral(Generator):
     '''
     Generates a spiral decomposition
     '''

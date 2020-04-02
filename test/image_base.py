@@ -48,18 +48,18 @@ def _test_overlay():
 
 
 def _test_random():
-    img, _ = random_grid(src_size, 10)
+    img, _ = random_grid(src_size, classes = 10, factor = 10)
     write_image(_i['random'], img)
     print(f'random: 10 classes seeded')
 
 
 def _test_generator():
-    partitioner = Generator_1(src_size, 10)
+    partitioner = Generator_RB(src_size, 10)
     img = partitioner.execute()
     write_image(_i['randomborder'], img)
     print(f'randomborder: written')
 
-    partitioner = Generator_2(src_size)
+    partitioner = Generator_Spiral(src_size)
     img = partitioner.execute()
     write_image(_i['spiral'], img)
     print(f'spiral: written')
