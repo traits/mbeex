@@ -11,3 +11,7 @@ def make_idict(names):
     for i in names:
         ret[i] = str(out_dir / i) + '.png'
     return ret
+
+
+def printPreamble(file):
+    print(f'\n### {file}:\n')
