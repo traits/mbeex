@@ -1,5 +1,6 @@
 import cv2
-#from PyQt5.QtCore import pyqtSignal
+
+# from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QFrame
 from PyQt5 import QtCore
@@ -8,7 +9,7 @@ from PyQt5 import QtCore
 class CvWidget(QGraphicsView):
     """Qt Widget for opencv content"""
 
-    #sendImageArea = pyqtSignal(int)  # image size in pixel
+    # sendImageArea = pyqtSignal(int)  # image size in pixel
 
     def __init__(self, parent=None):
         super(CvWidget, self).__init__(parent)
@@ -41,14 +42,16 @@ class CvWidget(QGraphicsView):
         self._cvImage = img.copy()
         if src_is_bgr:
             self._cvImage = cv2.cvtColor(self._cvImage, cv2.COLOR_BGR2RGB)
-        pixmap = QPixmap(QImage(self._cvImage, width, height, byteValue, QImage.Format_RGB888))
+        pixmap = QPixmap(
+            QImage(self._cvImage, width, height, byteValue, QImage.Format_RGB888)
+        )
         self._qpixmap.setPixmap(pixmap)
         self.fitInView()
-        #self.sendImageArea.emit( img.shape[0] * img.shape[1])
+        # self.sendImageArea.emit( img.shape[0] * img.shape[1])
 
     def fitInView(self, scale=True):
         rect = QtCore.QRectF(self._qpixmap.pixmap().rect())
-        #rect = self._scene.itemsBoundingRect()
+        # rect = self._scene.itemsBoundingRect()
         if not rect.isNull():
             self.setSceneRect(rect)
             if not self._empty and self.transform().isInvertible():
@@ -56,8 +59,10 @@ class CvWidget(QGraphicsView):
                 self.scale(1 / unity.width(), 1 / unity.height())
                 viewrect = self.viewport().rect()
                 scenerect = self.transform().mapRect(rect)
-                factor = min(viewrect.width() / scenerect.width(),
-                             viewrect.height() / scenerect.height())
+                factor = min(
+                    viewrect.width() / scenerect.width(),
+                    viewrect.height() / scenerect.height(),
+                )
                 self.scale(factor, factor)
             self._zoom = 0
 

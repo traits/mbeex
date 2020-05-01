@@ -13,7 +13,7 @@ _i = make_idict(inames)
 
 def _test_random():
     fac = 10
-    img, _ = random_grid(src_size, classes = 10, factor = fac)
+    img, _ = random_grid(src_size, classes=10, factor=fac)
     write_image(_i['random'], img)
     print(f'random: {fac} classes seeded')
 
@@ -32,8 +32,5 @@ def _test_generator():
 
 def test():
     printPreamble(__file__)
-    _test_random()              # random seeds
-    _test_generator()           # decision region generators
-
-
-
+    _test_random()  # random seeds
+    _test_generator()  # decision region generators

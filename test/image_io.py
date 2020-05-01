@@ -43,8 +43,5 @@ def _test_read():
 
 def test():
     printPreamble(__file__)
-    _test_write()    # writing images to file
-    _test_read()     # reading images from file
-
-
-
+    _test_write()  # writing images to file
+    _test_read()  # reading images from file

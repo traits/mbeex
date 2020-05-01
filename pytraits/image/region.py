@@ -17,10 +17,15 @@ def get_kernel_border_coordinates(d):
     '''
     border = d // 2
     primitive = list(range(-border, border + 1))
-    return [(x, y) for x in primitive for y in primitive if (abs(x) == border or abs(y) == border)]
+    return [
+        (x, y)
+        for x in primitive
+        for y in primitive
+        if (abs(x) == border or abs(y) == border)
+    ]
 
 
-def random_grid(size, classes, factor = 1, instances = 0):
+def random_grid(size, classes, factor=1, instances=0):
     """
     Creates a black gray image of randomly seeded pixels with values > 0
     from [1,...,classes] (so it is limited to 254 classes for factor==1)
@@ -66,7 +71,9 @@ class VicinityIterator:
     dependent on some condition
     '''
 
-    def __init__(self, grid, border_coordinates = get_kernel_border_coordinates(3)):  # 3x3 kernel border
+    def __init__(
+        self, grid, border_coordinates=get_kernel_border_coordinates(3)
+    ):  # 3x3 kernel border
         self._grid = grid
         self._size = Size2D(self._grid.shape[1], self._grid.shape[0])
         self.setVicinity(border_coordinates)
@@ -118,7 +125,9 @@ class Generator_RB(Generator):
 
         def __call__(self, x, y):
             self._i = (self._i + 1) % self._skips
-            return not self._checkPixel(self._i, self._skips, self._coord_len, self._grid, self._it, x, y)
+            return not self._checkPixel(
+                self._i, self._skips, self._coord_len, self._grid, self._it, x, y
+            )
 
         def _checkPixel(self, i, skips, size, new_grid, vic_it, x, y):
             if not i % skips or size < skips:
@@ -127,7 +136,7 @@ class Generator_RB(Generator):
 
     def __init__(self, size, number_of_classes):
         super().__init__(size)
-        self._grid, self._coords = random_grid(size, number_of_classes, factor = 10)
+        self._grid, self._coords = random_grid(size, number_of_classes, factor=10)
         self._vic = get_kernel_border_coordinates(5)
 
     def execute(self):
@@ -139,9 +148,9 @@ class Generator_RB(Generator):
         new_grid = None
         skips = 3
         fig, ax = plt.subplots()
-        h = ax.imshow(self._grid, interpolation = 'none', cmap='Spectral')
+        h = ax.imshow(self._grid, interpolation='none', cmap='Spectral')
 
-        cc = Generator_RB.Checker(skips, len(self._coords), grid = None, it = vic_it)
+        cc = Generator_RB.Checker(skips, len(self._coords), grid=None, it=vic_it)
         plt.ion()
         while self._coords:
             new_grid = self._grid
@@ -178,8 +187,10 @@ class Generator_Spiral(Generator):
         while i:
             x = np.sqrt(phi)
             phi = i * np.pi / 100 / x
-            y, x = (np.rint([b * phi * np.cos(phi), b * phi * np.sin(phi)]) + p).astype(int)
-            if (x >= 0 and x < new_grid.shape[1] and y >= 0 and y < new_grid.shape[0]):
+            y, x = (np.rint([b * phi * np.cos(phi), b * phi * np.sin(phi)]) + p).astype(
+                int
+            )
+            if x >= 0 and x < new_grid.shape[1] and y >= 0 and y < new_grid.shape[0]:
                 new_grid[y, x] = 100
                 cnt = 0
             if cnt > new_grid.shape[0] * new_grid.shape[1]:
@@ -189,5 +200,3 @@ class Generator_Spiral(Generator):
 
         self._grid[:] = new_grid[:]
         return new_grid
-
-

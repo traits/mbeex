@@ -39,7 +39,10 @@ def filter_directory(root, filter, *args, print_progress=False):
             if print_progress == True:
                 cnt += 1
                 percent = (100 * cnt) // all
-                print(f"Filtering directory tree: {percent}% ({cnt}/{all} files)", end="\r")
+                print(
+                    f"Filtering directory tree: {percent}% ({cnt}/{all} files)",
+                    end="\r",
+                )
                 percent = old_percent
             if filter == None or filter(ifile, *args):
                 ret.append(ifile)
@@ -124,7 +127,10 @@ class DirectoryWalker:
             else:
                 if files:
                     ifiles = f.selectInputFiles(files)
-                    ifiles = [os.path.normpath(os.path.join(curpath, ifile)) for ifile in ifiles]
+                    ifiles = [
+                        os.path.normpath(os.path.join(curpath, ifile))
+                        for ifile in ifiles
+                    ]
                     f(ifiles, structure)
 
 
@@ -168,7 +174,9 @@ class FileFilter:
         Check, if the file has a valid extension.
         """
 
-        if not self.valid_extensions or [ext for ext in self.valid_extensions if file.lower().endswith('.' + ext)]:
+        if not self.valid_extensions or [
+            ext for ext in self.valid_extensions if file.lower().endswith('.' + ext)
+        ]:
             return True
         return False
 
@@ -193,7 +201,7 @@ class FileFilter:
         for s in self.valid_suffixes:
             n = stem_name(file)
             if n.endswith(s):
-                n = n[:-len(s)] + new_suffix
+                n = n[: -len(s)] + new_suffix
                 pf = Path(file)
                 dir = pf.parents[0]
                 ext = pf.suffix
@@ -205,7 +213,9 @@ class FileFilter:
         Check, if the file has a valid suffix.
         """
 
-        if not self.valid_suffixes or [s for s in self.valid_suffixes if os.path.splitext(file)[0].endswith(s)]:
+        if not self.valid_suffixes or [
+            s for s in self.valid_suffixes if os.path.splitext(file)[0].endswith(s)
+        ]:
             return True
         return False
 

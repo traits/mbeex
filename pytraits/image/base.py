@@ -19,7 +19,9 @@ def image_size(img):
     (would be (ysize,xsize) instead)
     """
 
-    return Size2D(*img.shape[1::-1])  # http://stackoverflow.com/questions/25000159/how-to-cast-tuple-into-namedtuple
+    return Size2D(
+        *img.shape[1::-1]
+    )  # http://stackoverflow.com/questions/25000159/how-to-cast-tuple-into-namedtuple
 
 
 def image_area(img):
@@ -70,7 +72,7 @@ def transformation_from_angle(img, angle):
     nw = abs(np.sin(angle) * h) + abs(np.cos(angle) * w)
     nh = abs(np.cos(angle) * h) + abs(np.sin(angle) * w)
     # ask OpenCV for the rotation matrix
-    rot_mat = cv2.getRotationMatrix2D((nw * 0.5, nh * 0.5), np.degrees(angle), 1.)
+    rot_mat = cv2.getRotationMatrix2D((nw * 0.5, nh * 0.5), np.degrees(angle), 1.0)
     # calculate the move from the old center to the new center combined
     # with the rotation
     rot_move = np.dot(rot_mat, np.array([(nw - w) * 0.5, (nh - h) * 0.5, 0]))
@@ -94,7 +96,9 @@ def create_transformed_rect_mask(src_size, trafo, dst_size, flags):
     """
     img = create_mono_colored_image(src_size, 1, 255)
     img = cv2.warpAffine(img, trafo, dst_size, flags=flags)
-    _, mask = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY)  # set all pixels > 0 to white (255)
+    _, mask = cv2.threshold(
+        img, 0, 255, cv2.THRESH_BINARY
+    )  # set all pixels > 0 to white (255)
     return mask
 
 
@@ -126,7 +130,9 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
 
 def overlay_transformed_image(top, bg, trafo):
     flag = cv2.INTER_NEAREST
-    mask = create_transformed_rect_mask(image_size(top), trafo, image_size(bg), flags=flag)
+    mask = create_transformed_rect_mask(
+        image_size(top), trafo, image_size(bg), flags=flag
+    )
     top = cv2.warpAffine(top, trafo, image_size(bg), flags=flag)
     return overlay_images(top, bg, mask)
 
@@ -142,9 +148,7 @@ def overlay_images(top, bg, mask):
         :mask: mask
     """
 
-    if (image_size(bg) != image_size(top) or image_size(bg) != image_size(mask)):
+    if image_size(bg) != image_size(top) or image_size(bg) != image_size(mask):
         raise ImageException('image size mismatch')
 
     return cv2.copyTo(top, mask, bg)
-
-

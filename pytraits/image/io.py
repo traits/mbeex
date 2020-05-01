@@ -20,10 +20,10 @@ def read_image(fname, enforce_color=False):
     ret = cv2.imread(_s(fname), flags=f)
     # TODO: Make a decision regarding general RGB/BGR handling
     # if len(ret.shape) > 2:
-        # if ret.shape[2] == 3:
-            # ret = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)   # BGR -> RGB
-        # elif ret.shape[2] == 4:
-            #ret = cv2.cvtColor(ret, cv2.COLOR_BGRA2RGBA)
+    #   if ret.shape[2] == 3:
+    #       ret = cv2.cvtColor(ret, cv2.COLOR_BGR2RGB)   # BGR -> RGB
+    #   elif ret.shape[2] == 4:
+    #       ret = cv2.cvtColor(ret, cv2.COLOR_BGRA2RGBA)
     return ret
 
 
@@ -37,5 +37,3 @@ def write_image(fname, img):
     if not dir.exists():
         os.makedirs(dir)
     cv2.imwrite(_s(fname), img)
-
-
