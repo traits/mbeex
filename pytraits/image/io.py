@@ -9,9 +9,13 @@ def _s(fname):  # OpenCV doesn't understand Path objects
 
 def read_image(fname, enforce_color=False):
     """
-    Read image from file. For enforce_color==True, the image is converted to BGR:
-    2 color channels are added for grayscale images, an alpha channel is ignored
-    for corresponding formats.
+    Read image from file.
+    
+    Parameters:
+        :fname: string or Path object
+        :enforce_color: if True, the image is converted to BGR: 
+            2 color channels are added for grayscale images, an alpha 
+            channel is ignored for corresponding formats.
     """
 
     f = cv2.IMREAD_UNCHANGED
@@ -30,6 +34,10 @@ def read_image(fname, enforce_color=False):
 def write_image(fname, img):
     """
     Write image to file and create all intermediate directories, if not existing.
+
+    Parameters:
+        :fname: string or Path object
+        :img: img object to write
     """
 
     path = Path(fname)
