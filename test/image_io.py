@@ -5,11 +5,11 @@ from pytraits.base import Size2D
 from test import *
 
 inames = [
-    'gray',
-    'color',
-    'color_with_alpha',
-    'noise_color',
-    'noise_gray',
+    "gray",
+    "color",
+    "color_with_alpha",
+    "noise_color",
+    "noise_gray",
 ]
 
 _i = make_idict(inames)
@@ -17,28 +17,28 @@ _i = make_idict(inames)
 
 def _r(fname, should):
     img = read_image(_i[fname])
-    print(f'Read: {img.shape} depth should be: {should} ')
+    print(f"Read: {img.shape} depth should be: {should} ")
 
 
 def _test_write():
     img = create_mono_colored_image(src_size, 1, 100)
-    write_image(_i['gray'], img)
+    write_image(_i["gray"], img)
     img = create_mono_colored_image(src_size, 3, (100, 0, 0))  # bgr
-    write_image(_i['color'], img)
+    write_image(_i["color"], img)
     img = create_mono_colored_image(src_size, 4, (0, 0, 100, 80))  # bgra
-    write_image(_i['color_with_alpha'], img)
+    write_image(_i["color_with_alpha"], img)
     img = create_noisy_image(src_size, 3)
-    write_image(_i['noise_color'], img)
+    write_image(_i["noise_color"], img)
     img = create_noisy_image(src_size, 1)
-    write_image(_i['noise_gray'], img)
+    write_image(_i["noise_gray"], img)
 
 
 def _test_read():
-    _r('gray', 1)
-    _r('color', 3)
-    _r('color_with_alpha', 4)
-    _r('noise_color', 3)
-    _r('noise_gray', 1)
+    _r("gray", 1)
+    _r("color", 3)
+    _r("color_with_alpha", 4)
+    _r("noise_color", 3)
+    _r("noise_gray", 1)
 
 
 def test():

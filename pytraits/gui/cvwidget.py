@@ -88,7 +88,7 @@ class CvWidget(QGraphicsView):
             self.fitInView()
 
     def updateOther(self, other_widget):
-        '''Provide internal cv image for other CvWidget'''
+        """Provide internal cv image for other CvWidget"""
         if self._cvImage is not None:
             other_widget.setImage(self._cvImage, False)
 

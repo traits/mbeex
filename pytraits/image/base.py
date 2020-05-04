@@ -48,7 +48,7 @@ def create_noisy_image(size, depth):
     Return image with every pixel channel randomized
     """
 
-    imarray = np.random.randint(0, 256, size=(size.y, size.x, depth)).astype('uint8')
+    imarray = np.random.randint(0, 256, size=(size.y, size.x, depth)).astype("uint8")
     return imarray
 
 
@@ -149,6 +149,6 @@ def overlay_images(top, bg, mask):
     """
 
     if image_size(bg) != image_size(top) or image_size(bg) != image_size(mask):
-        raise ImageException('image size mismatch')
+        raise ImageException("image size mismatch")
 
     return cv2.copyTo(top, mask, bg)

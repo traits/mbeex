@@ -47,7 +47,7 @@ def filter_directory(root, filter, *args, print_progress=False):
             if filter == None or filter(ifile, *args):
                 ret.append(ifile)
     if print_progress == True:
-        print('')
+        print("")
     return ret
 
 
@@ -175,7 +175,7 @@ class FileFilter:
         """
 
         if not self.valid_extensions or [
-            ext for ext in self.valid_extensions if file.lower().endswith('.' + ext)
+            ext for ext in self.valid_extensions if file.lower().endswith("." + ext)
         ]:
             return True
         return False
@@ -197,7 +197,7 @@ class FileFilter:
         """
 
         if not self.valid_suffixes:
-            return ''
+            return ""
         for s in self.valid_suffixes:
             n = stem_name(file)
             if n.endswith(s):
@@ -206,7 +206,7 @@ class FileFilter:
                 dir = pf.parents[0]
                 ext = pf.suffix
                 return str(dir / Path(n)) + ext
-        return ''
+        return ""
 
     def validSuffix(self, file):
         """

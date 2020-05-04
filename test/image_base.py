@@ -5,9 +5,9 @@ from pytraits.image.base import *
 from test import *
 
 inames = [
-    'masked',
-    'transformed_mask',
-    'overlay',
+    "masked",
+    "transformed_mask",
+    "overlay",
 ]
 
 _i = make_idict(inames)
@@ -22,8 +22,8 @@ def _test_transformed_mask():
     dst_size = Size2D(trafo[1], trafo[2])  # use rectangular hull of rotated source
 
     img = create_transformed_rect_mask(src_size, rot, dst_size, flags=cv2.INTER_NEAREST)
-    write_image(_i['transformed_mask'], img)
-    print(f'transformed_mask: rotated white rectangle (angle = {angle_deg} degrees)')
+    write_image(_i["transformed_mask"], img)
+    print(f"transformed_mask: rotated white rectangle (angle = {angle_deg} degrees)")
 
 
 def _test_mask():
@@ -39,8 +39,8 @@ def _test_mask():
         thickness=cv2.FILLED,
     )
     img = overlay_images(top, bg, mask)
-    write_image(_i['masked'], img)
-    print(f'masked: blue circle (r={radius}) on red background')
+    write_image(_i["masked"], img)
+    print(f"masked: blue circle (r={radius}) on red background")
 
 
 def _test_overlay():
@@ -48,9 +48,9 @@ def _test_overlay():
     angle = angle_deg * np.pi / 180
     img = create_mono_colored_image(src_size, 3, (0, 200, 0))
     img = overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0)
-    write_image(_i['overlay'], img)
+    write_image(_i["overlay"], img)
     print(
-        f'overlay: rotated green rectangle (angle = {angle_deg} degrees) on noisy background'
+        f"overlay: rotated green rectangle (angle = {angle_deg} degrees) on noisy background"
     )
 
 

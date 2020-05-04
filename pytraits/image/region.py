@@ -12,9 +12,9 @@ containers containing shapes
 
 
 def get_kernel_border_coordinates(d):
-    '''
+    """
     Generate coordinate pairs for the border of a d*d kernel. d must be odd
-    '''
+    """
     border = d // 2
     primitive = list(range(-border, border + 1))
     return [
@@ -66,10 +66,10 @@ def random_grid(size, classes, factor=1, instances=0):
 
 
 class VicinityIterator:
-    '''
+    """
     Vicinity Iterator - surrounds a pixel and sets new pixels
     dependent on some condition
-    '''
+    """
 
     def __init__(
         self, grid, border_coordinates=get_kernel_border_coordinates(3)
@@ -103,15 +103,15 @@ class Generator:
 
 
 class Generator_RB(Generator):
-    '''
+    """
     Creates decompositions with slightly random boundaries
-    '''
+    """
 
     class Checker:
-        '''
+        """
         Provides state maintaining callable for a list comprehension filter,
         whose use accelerates removing elements from the Generator._coords list.
-        '''
+        """
 
         def __init__(self, skips, coord_len, grid, it):
             self._i = 0
@@ -140,7 +140,7 @@ class Generator_RB(Generator):
         self._vic = get_kernel_border_coordinates(5)
 
     def execute(self):
-        '''Calculates pixel creation on the whole grid'''
+        """Calculates pixel creation on the whole grid"""
         np.random.shuffle(self._coords)
         vic = copy.deepcopy(self._vic)  # this might be shuffled, etc.
         vic_it = VicinityIterator(self._grid, vic)
@@ -148,7 +148,7 @@ class Generator_RB(Generator):
         new_grid = None
         skips = 3
         fig, ax = plt.subplots()
-        h = ax.imshow(self._grid, interpolation='none', cmap='Spectral')
+        h = ax.imshow(self._grid, interpolation="none", cmap="Spectral")
 
         cc = Generator_RB.Checker(skips, len(self._coords), grid=None, it=vic_it)
         plt.ion()
@@ -161,21 +161,21 @@ class Generator_RB(Generator):
             h.set_data(new_grid)
             plt.draw()
             plt.pause(1e-3)
-            print(f'remaining: {len(self._coords)}')
+            print(f"remaining: {len(self._coords)}")
 
         return new_grid
 
 
 class Generator_Spiral(Generator):
-    '''
+    """
     Generates a spiral decomposition
-    '''
+    """
 
     def __init__(self, size):
         super().__init__(size)
 
     def execute(self):
-        '''---'''
+        """---"""
 
         new_grid = copy.deepcopy(self._grid)
 
