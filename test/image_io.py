@@ -4,7 +4,7 @@ from pytraits.image.io import *
 from pytraits.base import Size2D
 from test import *
 
-inames = [
+onames = [
     "gray",
     "color",
     "color_with_alpha",
@@ -12,7 +12,7 @@ inames = [
     "noise_gray",
 ]
 
-_i = make_idict(inames)
+_i = make_odict(onames)
 
 
 def _r(fname, should):

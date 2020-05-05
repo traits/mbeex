@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcol
 
 from pytraits.base import Size2D
 
@@ -152,3 +154,26 @@ def overlay_images(top, bg, mask):
         raise ImageException("image size mismatch")
 
     return cv2.copyTo(top, mask, bg)
+
+
+def apply_colormap(img, matplot_map_name):
+    """
+    Applies matplotlib colormap to opencv grayscale image
+    """
+
+    cmap = plt.get_cmap(matplot_map_name)
+    cmaplist = [cmap(i) for i in range(cmap.N)]
+
+    # replace 1st entry by black
+    cmaplist[0] = (
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+    )  # clip this later, if using 1.0 values for color components
+    # colormap = mcol.LinearSegmentedColormap.from_list("pytraits", cmaplist, cmap.N)
+    colormap = mcol.ListedColormap(cmaplist, "pytraits", cmap.N)
+    cmap = colormap(img) * 2 ** 16
+    # np.clip(cmap, 0, 2 ** 16 - 1, out=cmap)  # avoid overflows (see above)
+    result = cmap.astype(np.uint16)[:, :, :3]
+    return cv2.cvtColor(result, cv2.COLOR_RGB2BGR)

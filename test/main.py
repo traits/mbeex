@@ -8,9 +8,9 @@ import pytorch
 def main():
     #     base.test()
     #     image_io.test()
-    #     image_base.test()
+    image_base.test()
     #     image_region.test()
-    pytorch.test()
+    # pytorch.test()
 
 
 if __name__ == "__main__":

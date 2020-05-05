@@ -10,6 +10,13 @@ src_size = Size2D(x=300, y=200)
 def make_idict(names):
     ret = {}
     for i in names:
+        ret[i] = str(test_data_dir / i) + ".png"
+    return ret
+
+
+def make_odict(names):
+    ret = {}
+    for i in names:
         ret[i] = str(out_dir / i) + ".png"
     return ret
 

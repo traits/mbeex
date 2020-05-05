@@ -2,13 +2,13 @@ from pytraits.image.io import *
 from pytraits.image.region import *
 from test import *
 
-inames = [
+onames = [
     "random",
     "randomborder",
     "spiral",
 ]
 
-_i = make_idict(inames)
+_i = make_odict(onames)
 
 
 def _test_random():

@@ -5,12 +5,20 @@ from pytraits.image.base import *
 from test import *
 
 inames = [
-    "masked",
-    "transformed_mask",
-    "overlay",
+    "random_border",
 ]
 
 _i = make_idict(inames)
+
+
+onames = [
+    "masked",
+    "transformed_mask",
+    "overlay",
+    "colormap",
+]
+
+_o = make_odict(onames)
 
 
 def _test_transformed_mask():
@@ -22,7 +30,7 @@ def _test_transformed_mask():
     dst_size = Size2D(trafo[1], trafo[2])  # use rectangular hull of rotated source
 
     img = create_transformed_rect_mask(src_size, rot, dst_size, flags=cv2.INTER_NEAREST)
-    write_image(_i["transformed_mask"], img)
+    write_image(_o["transformed_mask"], img)
     print(f"transformed_mask: rotated white rectangle (angle = {angle_deg} degrees)")
 
 
@@ -39,7 +47,7 @@ def _test_mask():
         thickness=cv2.FILLED,
     )
     img = overlay_images(top, bg, mask)
-    write_image(_i["masked"], img)
+    write_image(_o["masked"], img)
     print(f"masked: blue circle (r={radius}) on red background")
 
 
@@ -48,10 +56,18 @@ def _test_overlay():
     angle = angle_deg * np.pi / 180
     img = create_mono_colored_image(src_size, 3, (0, 200, 0))
     img = overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0)
-    write_image(_i["overlay"], img)
+    write_image(_o["overlay"], img)
     print(
         f"overlay: rotated green rectangle (angle = {angle_deg} degrees) on noisy background"
     )
+
+
+def _test_colormap():
+    img = read_image(_i["random_border"])
+    img = cv2.normalize(img, img, 1, 255, cv2.NORM_MINMAX)
+    img = apply_colormap(img, "PuBuGn")
+    write_image(_o["colormap"], img)
+    print(f"colormap: colormapped grayscale image")
 
 
 def test():
@@ -59,3 +75,4 @@ def test():
     _test_mask()  # creating masked image
     _test_transformed_mask()  # creating transformed rectangular mask
     _test_overlay()  # overlay image with transformed 2nd image
+    _test_colormap()  # false color creation from matplotlib color map
