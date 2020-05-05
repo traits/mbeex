@@ -156,7 +156,7 @@ def overlay_images(top, bg, mask):
     return cv2.copyTo(top, mask, bg)
 
 
-def apply_colormap(img, matplot_map_name):
+def colormapped_image(img, matplot_map_name):
     """
     Applies matplotlib colormap to opencv grayscale image
     """

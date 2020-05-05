@@ -65,7 +65,7 @@ def _test_overlay():
 def _test_colormap():
     img = read_image(_i["random_border"])
     img = cv2.normalize(img, img, 1, 255, cv2.NORM_MINMAX)
-    img = apply_colormap(img, "PuBuGn")
+    img = colormapped_image(img, "PuBuGn")
     write_image(_o["colormap"], img)
     print(f"colormap: colormapped grayscale image")
 
