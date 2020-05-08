@@ -12,24 +12,6 @@ containers containing shapes
 """
 
 
-def find_contours(img, threshold, complexity=cv2.RETR_TREE):
-    # b = img.copy()
-    # set blue and red channels to 0
-    # b[:, :, 0] = 0
-    # b[:, :, 2] = 0
-
-    if img is None:
-        return None
-
-    timg = cv2.equalizeHist(img)
-    timg = cv2.GaussianBlur(timg, (5, 5), cv2.BORDER_DEFAULT)
-    _, thimg = cv2.threshold(timg, threshold, 255, cv2.THRESH_BINARY)
-    contours, hierarchy = cv2.findContours(thimg, complexity, cv2.CHAIN_APPROX_SIMPLE)[
-        -2:
-    ]  # compatible in opencv 2-4
-    return contours, hierarchy
-
-
 def get_kernel_border_coordinates(d):
     """
     Generate coordinate pairs for the border of a d*d kernel. d must be odd
@@ -219,3 +201,151 @@ class Generator_Spiral(Generator):
 
         self._grid[:] = new_grid[:]
         return new_grid
+
+
+#
+#
+#
+
+
+def roi_sampler(img, rect):
+    """
+    Returns complete content of rect. area as array of (pixel_value, y, x) samples 
+    
+    Parameters:
+        :img: input gray image
+        :rect: rect. ROI as list [x0,y0,x1,y1]
+        :return: 1D-array of (pixel_value, y, x) samples
+    """
+
+    x0, y0, x1, y1 = rect
+
+    roi = img[y0:y1, x0:x1]
+    samples = roi.copy()
+    y, x = np.indices(roi.shape)
+    y += y0
+    x += x0
+    samples = np.dstack((samples, y, x))
+    return samples.reshape(-1, samples.shape[2])
+
+
+def _random_sampler(img, rhull, number):
+    """
+    Samples pixel from random coordinates
+    
+    Parameters:
+        :img: input gray image
+        :number: number of pixel drawn (w/o replacement)
+        :return: 1D-array of (pixel_value, y, x) samples
+    """
+
+    x, y, w, h = rhull
+
+    roi = img[y : y + h, x : x + w]
+    iy, ix = np.indices(roi.shape)
+    iy += y
+    ix += x
+    samples = np.dstack((roi.copy(), iy, ix))
+    samples = samples.reshape(
+        -1, samples.shape[2]
+    )  # create 1D array of (p,y,x) 'points'
+    random_indices = np.arange(0, samples.shape[0])  # array of all indices
+    np.random.shuffle(random_indices)
+
+    return samples[random_indices[:number]]  # get N samples without replacement
+
+
+def random_sampler(img, number, contour=np.array([])):
+    """
+    Randomly samples pixel from the contours rectangular 
+    hull and returns the subset inside the contour.
+    
+    Remark: 'number' is the requested number for data points 
+    inside contour. But actually, the function draws the samples from 
+    the enclosing rectangle. It increases 'number' internally by 
+    multiplying it with the quotient of the both structures area (r_a/c_a) 
+    before doing so. After that, it returns the samples covered by the contour. 
+    Their number might slightly differ from the requested number.
+    
+    Parameters:
+        :img: input gray image
+        :number: number of pixel drawn (w/o replacement). 
+        :contour: ROI as OpenCV contour
+        :return: 1D-array of (pixel_value, y, x) samples
+    """
+
+    # contour == whole image
+    if contour.shape == (0,):
+        h, w = img.shape
+        return _random_sampler(img, [0, 0, w, h], number)
+
+    # calculate rect. hull
+    rhull = cv2.boundingRect(contour)
+
+    # calc. area quotient
+    ra = rhull[2] * rhull[3]
+    ca = cv2.contourArea(contour)
+    q = ra / ca
+
+    # increase 'number' accordingly
+    number = int(np.round(number * q))
+
+    # sample in rect. hull
+    samples = _random_sampler(img, rhull, number)
+
+    # mask with contour
+
+    return [
+        s for s in samples if 0 < cv2.pointPolygonTest(contour, (s[2], s[1]), False)
+    ]
+
+
+def partition_sampler(img):
+    """
+    Creates partition of the whole input image. Every sub-array contains all elements 
+    with the same pixel value and associated coordinates (pixel_value, y, x).
+    
+    Parameters:
+        :img: input gray image
+        :return: partition of the img
+    """
+    y, x = np.indices(img.shape)
+    samples = np.dstack((img.copy(), y, x))
+    samples = samples.reshape(
+        -1, samples.shape[2]
+    )  # create 1D array of (p,y,x) 'points'
+
+    samples = samples[samples[:, 0].argsort()]  # sort, using pixel value
+    first = samples[:, 0]  # sorted 1D array of pixel values
+    # calculate indices, where pixel values (class) change
+    _, indices = np.unique(first, return_index=True)
+    # split the original array at these indices
+    return np.split(samples, indices[1:])  # remove zero
+
+
+def grid_sampler(img, steps, rect=None):
+    """
+    Returns values at grid coordinates for required coordinate density.
+    Coordinates will be rounded, so they are not quite equidistant (up to 2 pixel)
+    
+    Parameters:
+        :img: input gray image
+        :steps: number of equidistant sampling points per coordinate: [xpoints, ypoints]
+        :rect:  ROI: [x0,y0,x1,y1] or None (whole img)
+        :return: 1D-array of (pixel_value, y, x) samples
+    """
+
+    x_steps, y_steps = steps
+
+    if not rect:
+        rect = [0, 0, img.shape[1] - 1, img.shape[0] - 1]
+
+    x0 = rect[0]
+    y0 = rect[1]
+    x1 = rect[2]
+    y1 = rect[3]
+
+    X = np.around(np.linspace(x0, x1, x_steps)).astype(np.uint8)
+    Y = np.around(np.linspace(y0, y1, y_steps)).astype(np.uint8)
+
+    return np.asarray([np.array([img[y, x], y, x]) for x in X for y in Y])

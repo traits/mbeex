@@ -177,3 +177,30 @@ def colormapped_image(img, matplot_map_name):
     # np.clip(cmap, 0, 2 ** 16 - 1, out=cmap)  # avoid overflows (see above)
     result = cmap.astype(np.uint16)[:, :, :3]
     return cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
+
+
+def find_contours(img, threshold, complexity=cv2.RETR_TREE):
+    """
+    Find contours in image
+    
+    Parameters:
+        :img: source image
+        :threshold: threshold for OpenCV's contour finder
+        :complexity: OpenCV enum, describing complexity of retrieved contour
+        :return: contours and contour hierarchy
+    """
+    # b = img.copy()
+    # set blue and red channels to 0
+    # b[:, :, 0] = 0
+    # b[:, :, 2] = 0
+
+    if img is None:
+        return None
+
+    timg = cv2.equalizeHist(img)
+    timg = cv2.GaussianBlur(timg, (5, 5), cv2.BORDER_DEFAULT)
+    _, thimg = cv2.threshold(timg, threshold, 255, cv2.THRESH_BINARY)
+    contours, hierarchy = cv2.findContours(thimg, complexity, cv2.CHAIN_APPROX_SIMPLE)[
+        -2:
+    ]  # compatible in opencv 2-4
+    return contours, hierarchy

@@ -21,5 +21,12 @@ def make_odict(names):
     return ret
 
 
+def make_odict2(name, number):
+    ret = {}
+    for i in range(number):
+        ret[i] = str(out_dir / f"{name}_{i:02d}") + ".png"
+    return ret
+
+
 def printPreamble(file):
     print(f"\n### {file}:\n")
