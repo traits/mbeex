@@ -26,6 +26,14 @@ def _test_generator():
 
     partitioner = Generator_Spiral(src_size)
     img = partitioner.execute()
+
+    # import matplotlib.pyplot as plt
+
+    # fig, ax = plt.subplots()
+    # ax.imshow(partitioner.execute(), interpolation="none", cmap="Spectral")
+
+    # plt.show()
+
     write_image(_i["spiral"], img)
     print(f"spiral: written")
 

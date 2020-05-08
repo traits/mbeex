@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
@@ -9,6 +10,24 @@ from pytraits.base import Size2D
 Shapes, ROI's and operations on them and
 containers containing shapes
 """
+
+
+def find_contours(img, threshold, complexity=cv2.RETR_TREE):
+    # b = img.copy()
+    # set blue and red channels to 0
+    # b[:, :, 0] = 0
+    # b[:, :, 2] = 0
+
+    if img is None:
+        return None
+
+    timg = cv2.equalizeHist(img)
+    timg = cv2.GaussianBlur(timg, (5, 5), cv2.BORDER_DEFAULT)
+    _, thimg = cv2.threshold(timg, threshold, 255, cv2.THRESH_BINARY)
+    contours, hierarchy = cv2.findContours(thimg, complexity, cv2.CHAIN_APPROX_SIMPLE)[
+        -2:
+    ]  # compatible in opencv 2-4
+    return contours, hierarchy
 
 
 def get_kernel_border_coordinates(d):
