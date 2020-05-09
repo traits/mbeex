@@ -104,7 +104,7 @@ def _test_sampler():
     cv2.drawContours(regions, contours, -1, 255, 1)
     cv2.imwrite(str(out_dir / _o["sampler_random_contour_t"]), regions)
 
-    samples = random_sampler(regions, 10000, contours[2])
+    samples = random_sampler(regions, 10000, contours[3])
     writeSampleImage(regions.shape, categories, samples, _o["sampler_random_contour"])
     samples = random_sampler(regions, image_area(regions) // 20)
     writeSampleImage(regions.shape, categories, samples, _o["sampler_random_all"])
