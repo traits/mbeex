@@ -25,7 +25,7 @@ def _test_walker():
         cv2.imwrite(ofile, new_image)
 
     dw = DirectoryWalker(test_data_dir / "dirwalk", out_dir / "dirwalk")
-    dw.createFilteredData(resizeImage, scale_x=0.5, scale_y=0.25)
+    dw.createFilteredData(resizeImage, 0.5, 0.25)
 
 
 def test():

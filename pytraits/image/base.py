@@ -4,8 +4,6 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcol
 
-from pytraits.base import Size2D
-
 
 class ImageException(Exception):
     """
@@ -17,13 +15,10 @@ class ImageException(Exception):
 
 def image_size(img):
     """
-    Returns (xsize,ysize) instead numpy's img.shape[:2]
-    (would be (ysize,xsize) instead)
+    Returns img.shape[:2]  # (y,x)
     """
 
-    return Size2D(
-        *img.shape[1::-1]
-    )  # http://stackoverflow.com/questions/25000159/how-to-cast-tuple-into-namedtuple
+    return img.shape[:2]
 
 
 def image_area(img):
@@ -40,7 +35,7 @@ def create_mono_colored_image(size, depth, color):
     or grayscale (depth == 1) image
     """
 
-    img = np.empty((size.y, size.x, depth), np.uint8)
+    img = np.empty((size[0], size[1], depth), np.uint8)
     img[:] = color
     return img
 
@@ -50,7 +45,7 @@ def create_noisy_image(size, depth):
     Return image with every pixel channel randomized
     """
 
-    imarray = np.random.randint(0, 256, size=(size.y, size.x, depth)).astype("uint8")
+    imarray = np.random.randint(0, 256, size=(size[0], size[1], depth)).astype("uint8")
     return imarray
 
 
@@ -97,7 +92,7 @@ def create_transformed_rect_mask(src_size, trafo, dst_size, flags):
         :return:    transformed rectangular mask (white==255) on black background
     """
     img = create_mono_colored_image(src_size, 1, 255)
-    img = cv2.warpAffine(img, trafo, dst_size, flags=flags)
+    img = cv2.warpAffine(img, trafo, (dst_size[1], dst_size[0]), flags=flags)
     _, mask = cv2.threshold(
         img, 0, 255, cv2.THRESH_BINARY
     )  # set all pixels > 0 to white (255)
@@ -126,7 +121,7 @@ def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
     par[1] += dx0 + dx1
     par[2] += dy0 + dy1
 
-    bg = create_noisy_image(Size2D(par[1], par[2]), img.shape[2])
+    bg = create_noisy_image([par[2], par[1]], img.shape[2])
     return overlay_transformed_image(img, bg, par[0])
 
 
@@ -135,7 +130,8 @@ def overlay_transformed_image(top, bg, trafo):
     mask = create_transformed_rect_mask(
         image_size(top), trafo, image_size(bg), flags=flag
     )
-    top = cv2.warpAffine(top, trafo, image_size(bg), flags=flag)
+    bgs = image_size(bg)
+    top = cv2.warpAffine(top, trafo, (bgs[1], bgs[0]), flags=flag)
     return overlay_images(top, bg, mask)
 
 

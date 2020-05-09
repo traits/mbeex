@@ -1,5 +1,4 @@
 import cv2
-from pytraits.base import Size2D
 from pytraits.image.io import *
 from pytraits.image.base import *
 from test import *
@@ -27,7 +26,7 @@ def _test_transformed_mask():
     img = create_mono_colored_image(src_size, 1, 0)
     trafo = transformation_from_angle(img, angle)
     rot = trafo[0]  # rotational part
-    dst_size = Size2D(trafo[1], trafo[2])  # use rectangular hull of rotated source
+    dst_size = [trafo[2], trafo[1]]  # use rectangular hull of rotated source
 
     img = create_transformed_rect_mask(src_size, rot, dst_size, flags=cv2.INTER_NEAREST)
     write_image(_o["transformed_mask"], img)
@@ -41,7 +40,7 @@ def _test_mask():
     radius = 20
     mask = cv2.circle(
         mask,
-        center=(src_size.x // 2, src_size.y // 2),
+        center=(src_size[1] // 2, src_size[0] // 2),
         radius=radius,
         color=255,
         thickness=cv2.FILLED,

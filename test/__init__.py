@@ -1,10 +1,9 @@
 from pathlib import Path
-from pytraits.base import Size2D
 
 root = Path(__file__).parents[1]
 out_dir = root / "_output"
 test_data_dir = root / "test_data"
-src_size = Size2D(x=300, y=200)
+src_size = [200, 300]
 
 
 def make_idict(names):

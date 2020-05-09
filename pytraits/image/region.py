@@ -3,8 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 
-from pytraits.base import Size2D
-
 
 """
 Shapes, ROI's and operations on them and
@@ -49,19 +47,19 @@ def random_grid(size, classes, factor=1, instances=0):
 
     coords = None
     if instances < classes:
-        coords = np.random.choice(size.x * size.y, classes, replace=False)
+        coords = np.random.choice(size[0] * size[1], classes, replace=False)
     else:
-        coords = np.random.choice(size.x * size.y, instances, replace=True)
+        coords = np.random.choice(size[0] * size[1], instances, replace=True)
 
-    grid = np.zeros(size.x * size.y, dtype=int)
+    grid = np.zeros(size[0] * size[1], dtype=int)
     i = 1
     for c in coords:
         grid[c] = i * factor
         i = i + 1
 
-    grid = grid.reshape(size.y, size.x)
-    X = np.arange(size.x, dtype=int)
-    Y = np.arange(size.y, dtype=int)
+    grid = grid.reshape(size[0], size[1])
+    X = np.arange(size[1], dtype=int)
+    Y = np.arange(size[0], dtype=int)
     grid_coords = [(x, y) for x in X for y in Y if grid[y, x] == 0]
     return grid, grid_coords
 
@@ -76,7 +74,7 @@ class VicinityIterator:
         self, grid, border_coordinates=get_kernel_border_coordinates(3)
     ):  # 3x3 kernel border
         self._grid = grid
-        self._size = Size2D(self._grid.shape[1], self._grid.shape[0])
+        self._size = [self._grid.shape[0], self._grid.shape[1]]
         self.setVicinity(border_coordinates)
 
     def setVicinity(self, vic):
@@ -85,8 +83,8 @@ class VicinityIterator:
     def execute(self, x, y, grid):
         np.random.shuffle(self._vic)
         for dx, dy in self._vic:
-            xx = (x + dx) % self._size.x
-            yy = (y + dy) % self._size.y
+            xx = (x + dx) % self._size[1]
+            yy = (y + dy) % self._size[0]
             if self._grid[yy, xx] != 0:
                 grid[y, x] = self._grid[yy, xx]
                 return True  # pixel has been set
@@ -95,7 +93,7 @@ class VicinityIterator:
 
 class Generator:
     def __init__(self, size):
-        self._grid = np.zeros(size.x * size.y, dtype=int).reshape(size.y, size.x)
+        self._grid = np.zeros(size[0] * size[1], dtype=int).reshape(size[0], size[1])
         self._size = self._grid.shape
         self._coords = None
 
