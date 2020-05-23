@@ -15,7 +15,7 @@ class ImageException(Exception):
 
 def image_size(img):
     """
-    Returns img.shape[:2]  # (y,x)
+    Returns `img.shape[:2]  # (y,x)`
     """
 
     return img.shape[:2]
@@ -31,8 +31,8 @@ def image_area(img):
 
 def create_mono_colored_image(size, depth, color):
     """
-    Return new mono-colored (depth==3) [with alpha for depth==4]
-    or grayscale (depth == 1) image
+    Return new mono-colored (`depth==3`) [with alpha for `depth==4`]
+    or grayscale (`depth == 1`) image
     """
 
     img = np.empty((size[0], size[1], depth), np.uint8)
@@ -55,12 +55,12 @@ def transformation_from_angle(img, angle):
     some angle around the center. The matrix will contain the rotation and the 
     necessary translation for adjusting the center point.
     Be aware, that this transformation is the backward (inverse) transformation
-    (dst -> img), because OpenCV's warpAffine function utilizes this form. 
+    (dst -> img), because OpenCV's `warpAffine` function utilizes this form. 
 
     Parameters:
         :img:       source image
         :angle:     rotation angle (radians)
-        :return:    transformation matrix for OpenCV warpAffine
+        :return:    `[transformation matrix for OpenCV warpAffine, width, height]`
     """
 
     w = img.shape[1]

@@ -22,10 +22,10 @@ def count_files(root):
 def filter_directory(root, filter, *args, print_progress=False):
     """
     Return a subset of file names below root, using a
-    filter function (or functor - overload __call__)
-    filter(file_name, *args) -> bool
+    filter function (or functor - overload `__call__`)
+    `filter(file_name, *args) -> bool`
     
-    For filter == None, every file will be returned.
+    For `filter == None`, every file will be returned.
     """
 
     all = count_files(root)
@@ -53,9 +53,9 @@ def filter_directory(root, filter, *args, print_progress=False):
 
 def replicate_dir(iroot, relpath, oroot):
     """
-    Replicate some part of iroots directory structure (described by relative path relpath)
-    in oroot on the fly.
-    Returns path string of the newly created or existing directory under oroot 
+    Replicate some part of `iroots` directory structure (described by relative path `relpath`)
+    in `oroot` on the fly.
+    Returns path string of the newly created or existing directory under `oroot` 
     """
 
     structure = os.path.join(oroot, os.path.relpath(relpath, iroot))
@@ -90,10 +90,10 @@ class DirectoryWalker:
 
     def createFilteredData(self, filter, *args):
         """
-        Duplicate self.src_dir into identical
-        tree structure in self.dst_dir with the contained files transformed
-        using a filter function (or functor [overload __call__])
-        filter(ifile, ofile, *args)
+        Duplicate `self.src_dir` into identical
+        tree structure in `self.dst_dir` with the contained files transformed
+        using a filter function (or functor [overload `__call__`])
+        `filter(ifile, ofile, *args)`
         """
 
         all = count_files(self.src_dir)
@@ -114,8 +114,8 @@ class DirectoryWalker:
 
     def run(self, f, multiple=False):
         """
-        Traverse self.src_dir directory tree, recreate mirror tree in self.dst_dir on the fly and apply
-        functor f to every allowed source file. f can map files 1:1 and n:1
+        Traverse `self.src_dir` directory tree, recreate mirror tree in self.dst_dir on the fly and apply
+        functor `f` to every allowed source file. `f` can map files 1:1 and n:1
         """
 
         for curpath, subdirs, files in os.walk(self.src_dir):
@@ -155,7 +155,7 @@ class FileFilter:
     def setValidExtensions(self, valid_extensions):
         """
         Select, which file types are processed.
-        All extensions in valid_extensions are allowed.
+        All extensions in `valid_extensions` are allowed.
         """
 
         self.valid_extensions = valid_extensions
@@ -163,7 +163,7 @@ class FileFilter:
     def setValidSuffixes(self, valid_suffixes):
         """
         Select, which file types are processed.
-        All suffixes of the filenames stem in valid_suffixes
+        All suffixes of the filenames stem in `valid_suffixes`
         are allowed.
         """
 
@@ -182,7 +182,7 @@ class FileFilter:
 
     def validParticularSuffix(self, file, suffix):
         """
-        Check, if the file has a specific suffix.
+        Check, if the `file` has a specific suffix.
         """
 
         if not self.valid_suffixes or os.path.splitext(file)[0].endswith(suffix):
@@ -191,7 +191,7 @@ class FileFilter:
 
     def replaceSuffix(self, file, new_suffix):
         """
-        If file ends with a valid suffix the function returns
+        If `file` ends with a valid suffix the function returns
         a new file name with this suffix replaced by new_suffix.
         Otherwise an empty string is returned
         """

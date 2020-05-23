@@ -30,7 +30,7 @@ class CvWidget(QGraphicsView):
 
     def setImage(self, img, src_is_bgr=True):
         """
-        Set maintained image to opencv image img.
+        Set maintained image to opencv image `img`.
         Always makes a deep copy
         """
         height, width, byteValue = img.shape

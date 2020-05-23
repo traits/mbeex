@@ -12,7 +12,7 @@ containers containing shapes
 
 def get_kernel_border_coordinates(d):
     """
-    Generate coordinate pairs for the border of a d*d kernel. d must be odd
+    Generate coordinate pairs for the border of a `d*d` kernel. `d` must be odd
     """
     border = d // 2
     primitive = list(range(-border, border + 1))
@@ -28,7 +28,7 @@ def random_grid(size, classes, factor=1, instances=0):
     """
     Creates a black gray image of randomly seeded pixels with values > 0
     from [1,...,classes] (so it is limited to 254 classes for factor==1)
-    For instances > classes, multiple seeds of the same class are allowed
+    For `instances` > `classes`, multiple seeds of the same class are allowed
     (but non-connected areas in general might nevertheless appear for
     non-deflecting boundary conditions and other reasons)
     
@@ -109,7 +109,7 @@ class Generator_RB(Generator):
     class Checker:
         """
         Provides state maintaining callable for a list comprehension filter,
-        whose use accelerates removing elements from the Generator._coords list.
+        whose use accelerates removing elements from the `Generator._coords` list.
         """
 
         def __init__(self, skips, coord_len, grid, it):
@@ -258,9 +258,9 @@ def random_sampler(img, number, contour=np.array([])):
     Randomly samples pixel from the contours rectangular 
     hull and returns the subset inside the contour.
     
-    Remark: 'number' is the requested number for data points 
-    inside contour. But actually, the function draws the samples from 
-    the enclosing rectangle. It increases 'number' internally by 
+    Remark: `number` is the requested number for data points 
+    inside `contour`. But actually, the function draws the samples from 
+    the enclosing rectangle. It increases `number` internally by 
     multiplying it with the quotient of the both structures area (r_a/c_a) 
     before doing so. After that, it returns the samples covered by the contour. 
     Their number might slightly differ from the requested number.
