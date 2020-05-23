@@ -19,6 +19,7 @@ onames = [
     "sampler_random_contour_t",
     "sampler_random_contour",
     "sampler_random_all",
+    "sampler_grid",
 ]
 _o = make_odict(onames)
 
@@ -86,11 +87,15 @@ def _test_sampler():
         inv += 1  # (we need the zero later)
         return inv.reshape(img.shape).astype(np.uint8), len(u)
 
+    def sample(img, out_file, sampler, *args):
+        samples = sampler(img, *args)
+        writeSampleImage(regions.shape, categories, samples, _o[out_file])
+
     regions, categories = loadImage(_i["random_border"])
     writeColorImage(maximizedImage(regions), _o["randomborder_colored"])
 
-    samples = roi_sampler(regions, [25, 32, 160, 177])
-    writeSampleImage(regions.shape, categories, samples, _o["sampler_roi"])
+    sample(regions, "sampler_roi", roi_sampler, [25, 32, 160, 177])
+
     samples = partition_sampler(regions)
 
     _op = make_odict2("sampler_partition", categories)
@@ -104,10 +109,9 @@ def _test_sampler():
     cv2.drawContours(regions, contours, -1, 255, 1)
     cv2.imwrite(str(out_dir / _o["sampler_random_contour_t"]), regions)
 
-    samples = random_sampler(regions, 10000, contours[3])
-    writeSampleImage(regions.shape, categories, samples, _o["sampler_random_contour"])
-    samples = random_sampler(regions, image_area(regions) // 20)
-    writeSampleImage(regions.shape, categories, samples, _o["sampler_random_all"])
+    sample(regions, "sampler_random_contour", random_sampler, 10000, contours[3])
+    sample(regions, "sampler_random_all", random_sampler, image_area(regions) // 20)
+    sample(regions, "sampler_grid", grid_sampler, [60, 30], [25, 32, 160, 177])
 
 
 def test():

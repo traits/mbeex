@@ -328,12 +328,12 @@ def grid_sampler(img, steps, rect=None):
     
     Parameters:
         :img: input gray image
-        :steps: number of equidistant sampling points per coordinate: [xpoints, ypoints]
+        :steps: number of equidistant sampling points per coordinate: [ypoints, xpoints]
         :rect:  ROI: [x0,y0,x1,y1] or None (whole img)
         :return: 1D-array of (pixel_value, y, x) samples
     """
 
-    x_steps, y_steps = steps
+    y_steps, x_steps = steps
 
     if not rect:
         rect = [0, 0, img.shape[1] - 1, img.shape[0] - 1]
