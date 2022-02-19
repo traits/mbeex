@@ -31,17 +31,17 @@ def random_grid(size, classes, factor=1, instances=0):
     For `instances` > `classes`, multiple seeds of the same class are allowed
     (but non-connected areas in general might nevertheless appear for
     non-deflecting boundary conditions and other reasons)
-    
+
     The function also returns an array of coordinate tupels (x,y) for every
-    coordinate without seeded pixels (black resp. zero) 
-    
+    coordinate without seeded pixels (black resp. zero)
+
     Parameters:
         :size:      image size
         :classes:   number of classes
         :factor:    multiplied with pixel value
-                    (example: factor=7 means pixel values of [7,14,21...7*classes]    
+                    (example: factor=7 means pixel values of [7,14,21...7*classes]
         :instances: number of instances
-        
+
         :return: gray image with seeded pixels; coordinate array
     """
 
@@ -208,8 +208,8 @@ class Generator_Spiral(Generator):
 
 def roi_sampler(img, rect):
     """
-    Returns complete content of rect. area as array of (pixel_value, y, x) samples 
-    
+    Returns complete content of rect. area as array of (pixel_value, y, x) samples
+
     Parameters:
         :img: input gray image
         :rect: rect. ROI as list [x0,y0,x1,y1]
@@ -230,7 +230,7 @@ def roi_sampler(img, rect):
 def _random_sampler(img, rhull, number):
     """
     Samples pixel from random coordinates
-    
+
     Parameters:
         :img: input gray image
         :number: number of pixel drawn (w/o replacement)
@@ -255,19 +255,19 @@ def _random_sampler(img, rhull, number):
 
 def random_sampler(img, number, contour=np.array([])):
     """
-    Randomly samples pixel from the contours rectangular 
+    Randomly samples pixel from the contours rectangular
     hull and returns the subset inside the contour.
-    
-    Remark: `number` is the requested number for data points 
-    inside `contour`. But actually, the function draws the samples from 
-    the enclosing rectangle. It increases `number` internally by 
-    multiplying it with the quotient of the both structures area (r_a/c_a) 
-    before doing so. After that, it returns the samples covered by the contour. 
+
+    Remark: `number` is the requested number for data points
+    inside `contour`. But actually, the function draws the samples from
+    the enclosing rectangle. It increases `number` internally by
+    multiplying it with the quotient of the both structures area (r_a/c_a)
+    before doing so. After that, it returns the samples covered by the contour.
     Their number might slightly differ from the requested number.
-    
+
     Parameters:
         :img: input gray image
-        :number: number of pixel drawn (w/o replacement). 
+        :number: number of pixel drawn (w/o replacement).
         :contour: ROI as OpenCV contour
         :return: 1D-array of (pixel_value, y, x) samples
     """
@@ -293,16 +293,16 @@ def random_sampler(img, number, contour=np.array([])):
 
     # mask with contour
 
-    return [
-        s for s in samples if 0 < cv2.pointPolygonTest(contour, (s[2], s[1]), False)
-    ]
+    points = [(s, tuple([int(round(s[2])), int(round(s[1]))])) for s in samples]
+
+    return [p[0] for p in points if 0 < cv2.pointPolygonTest(contour, p[1], False)]
 
 
 def partition_sampler(img):
     """
-    Creates partition of the whole input image. Every sub-array contains all elements 
+    Creates partition of the whole input image. Every sub-array contains all elements
     with the same pixel value and associated coordinates (pixel_value, y, x).
-    
+
     Parameters:
         :img: input gray image
         :return: partition of the img
@@ -325,7 +325,7 @@ def grid_sampler(img, steps, rect=None):
     """
     Returns values at grid coordinates for required coordinate density.
     Coordinates will be rounded, so they are not quite equidistant (up to 2 pixel)
-    
+
     Parameters:
         :img: input gray image
         :steps: number of equidistant sampling points per coordinate: [ypoints, xpoints]
