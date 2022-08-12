@@ -1,5 +1,5 @@
-from pytraits.image.base import *
-from pytraits.image.io import *
+from mbeex.image.base import *
+from mbeex.image.io import *
 from test import *
 
 onames = [

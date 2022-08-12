@@ -51,11 +51,11 @@ def create_noisy_image(size, depth):
 
 def transformation_from_angle(img, angle):
     """
-    Return transformation matrix and new (width,height) for an image, rotated by 
-    some angle around the center. The matrix will contain the rotation and the 
+    Return transformation matrix and new (width,height) for an image, rotated by
+    some angle around the center. The matrix will contain the rotation and the
     necessary translation for adjusting the center point.
     Be aware, that this transformation is the backward (inverse) transformation
-    (dst -> img), because OpenCV's `warpAffine` function utilizes this form. 
+    (dst -> img), because OpenCV's `warpAffine` function utilizes this form.
 
     Parameters:
         :img:       source image
@@ -83,7 +83,7 @@ def transformation_from_angle(img, angle):
 def create_transformed_rect_mask(src_size, trafo, dst_size, flags):
     """
     Create white grayscale image, transform it into black target and return result image
-    
+
     Parameters:
         :src_size:  rectangular mask size before transformation
         :trafo:     affine transformation for cv2.warpAffine
@@ -100,8 +100,8 @@ def create_transformed_rect_mask(src_size, trafo, dst_size, flags):
 
 
 def overlay_on_noisy_background(img, angle, dx0=0, dy0=0, dx1=0, dy1=0):
-    """ 
-    Put transformed image on white-noise background. 
+    """
+    Put transformed image on white-noise background.
     Offsets must be always >= 0.
 
     Parameters:
@@ -167,9 +167,9 @@ def colormapped_image(img, matplot_map_name):
         0.0,
         1.0,
     )  # clip this later, if using 1.0 values for color components
-    # colormap = mcol.LinearSegmentedColormap.from_list("pytraits", cmaplist, cmap.N)
-    colormap = mcol.ListedColormap(cmaplist, "pytraits", cmap.N)
-    cmap = colormap(img) * 2 ** 16
+    # colormap = mcol.LinearSegmentedColormap.from_list("mbeex", cmaplist, cmap.N)
+    colormap = mcol.ListedColormap(cmaplist, "mbeex", cmap.N)
+    cmap = colormap(img) * 2**16
     # np.clip(cmap, 0, 2 ** 16 - 1, out=cmap)  # avoid overflows (see above)
     result = cmap.astype(np.uint16)[:, :, :3]
     return cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
@@ -178,7 +178,7 @@ def colormapped_image(img, matplot_map_name):
 def find_contours(img, threshold, complexity=cv2.RETR_TREE):
     """
     Find contours in image
-    
+
     Parameters:
         :img: source image
         :threshold: threshold for OpenCV's contour finder

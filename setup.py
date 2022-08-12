@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pytraits",
-    version="0.0.1",
+    name="mbeex",
+    version="0.0.3",
     author="mbee",
     author_email="python@traits.de",
     description="traits.de - common stuff",
@@ -18,5 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.7',
+    python_requires=">=3.7",
 )

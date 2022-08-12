@@ -1,4 +1,4 @@
-from pytraits.pytorch import cuda
+from mbeex.pytorch import cuda
 from test import *
 
 

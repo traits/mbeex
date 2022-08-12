@@ -1,6 +1,6 @@
 import cv2
-from pytraits.image.io import *
-from pytraits.image.base import *
+from mbeex.image.io import *
+from mbeex.image.base import *
 from test import *
 
 inames = [

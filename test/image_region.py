@@ -1,6 +1,6 @@
-from pytraits.image.base import *
-from pytraits.image.io import *
-from pytraits.image.region import *
+from mbeex.image.base import *
+from mbeex.image.io import *
+from mbeex.image.region import *
 from test import *
 
 
@@ -61,7 +61,8 @@ def _test_sampler():
         # https://matplotlib.org/3.1.1/gallery/color/colormap_reference.html
         mplot_map = "PuBuGn"
         write_image(
-            fname, colormapped_image(img, mplot_map),
+            fname,
+            colormapped_image(img, mplot_map),
         )
 
     def writeSampleImage(shape, max_value, samples, fname):

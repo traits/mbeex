@@ -1,6 +1,6 @@
 import cv2
 import albumentations as A
-from pytraits.base.directory import *
+from mbeex.base.directory import *
 from test import *
 
 
